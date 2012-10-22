@@ -1,0 +1,50 @@
+diff -ru bashline.c bashline.c
+--- bashline.c	2011-01-16 15:32:47.000000000 -0500
++++ bashline.c	2012-02-04 16:33:15.861383082 -0500
+@@ -60,6 +60,10 @@
+
+ #include <glob/glob.h>
+
++#define setgrent() 0
++#define getgrent() 0
++#define endgrent() 0
++
+ #if defined (ALIAS)
+ #  include "alias.h"
+ #endif
+diff -ru execute_cmd.c execute_cmd.c
+--- execute_cmd.c	2011-02-09 17:32:25.000000000 -0500
++++ execute_cmd.c	2012-02-04 16:30:04.303791287 -0500
+@@ -2202,7 +2202,7 @@
+   /* If the `lastpipe' option is set with shopt, and job control is not
+      enabled, execute the last element of non-async pipelines in the
+      current shell environment. */
+-  if (lastpipe_opt && job_control == 0 && asynchronous == 0 && pipe_out == NO_PIPE && prev > 0)
++  if (lastpipe_opt && asynchronous == 0 && pipe_out == NO_PIPE && prev > 0)
+     {
+       lstdin = move_to_high_fd (0, 0, 255);
+       if (lstdin > 0)
+diff -ru lib/readline/complete.c lib/readline/complete.c
+--- lib/readline/complete.c	2011-01-16 15:32:57.000000000 -0500
++++ lib/readline/complete.c	2012-02-04 16:34:25.760504332 -0500
+@@ -76,6 +76,8 @@
+ #  define LSTAT stat
+ #endif
+
++#define setpwent() 0
++
+ /* Unix version of a hidden file.  Could be different on other systems. */
+ #define HIDDEN_FILE(fname)	((fname)[0] == '.')
+
+diff -ru lib/sh/oslib.c lib/sh/oslib.c
+--- lib/sh/oslib.c	2010-05-30 18:33:12.000000000 -0400
++++ lib/sh/oslib.c	2012-02-04 16:32:31.209944428 -0500
+@@ -235,7 +235,7 @@
+
+ #if !defined (HAVE_MKFIFO) && defined (PROCESS_SUBSTITUTION)
+ int
+-mkfifo (path, mode)
++mkfifo__ (path, mode)
+      char *path;
+      int mode;
+ {
